@@ -1,0 +1,87 @@
+{
+  "project_info": {
+    "project_number": "515934950704",
+    "firebase_url": "https://qcart-b5ab2-default-rtdb.firebaseio.com",
+    "project_id": "qcart-b5ab2",
+    "storage_bucket": "qcart-b5ab2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515934950704:android:ea4255d73957defa6f64f5",
+        "android_client_info": {
+          "package_name": "com.example.ls"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi_SJcJcFUQrBVJIpblq9s5CnYbugr5x0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515934950704:android:b5ace8eb7dc8fcda6f64f5",
+        "android_client_info": {
+          "package_name": "com.example.qcommerc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi_SJcJcFUQrBVJIpblq9s5CnYbugr5x0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515934950704:android:c2096df4d9e909226f64f5",
+        "android_client_info": {
+          "package_name": "com.example.quicks"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi_SJcJcFUQrBVJIpblq9s5CnYbugr5x0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515934950704:android:75c14d3340afaafb6f64f5",
+        "android_client_info": {
+          "package_name": "com.example.shop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi_SJcJcFUQrBVJIpblq9s5CnYbugr5x0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

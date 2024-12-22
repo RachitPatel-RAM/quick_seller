@@ -66,6 +66,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+
+      // Generate a new unique sellerId (could use Firebase auto ID or UUID)
+      String sellerId = FirebaseFirestore.instance.collection('users').doc().id;
+
+      // Create a new user in the 'users' collection with the sellerId
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid)
@@ -73,7 +78,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         'name': _nameController.text,
         'email': _emailController.text,
         'profileImage': imageUrl,
+        'password': _passwordController.text, // Store password in the same collection
+        'sellerId': sellerId, // Store sellerId
       });
+
       Navigator.pop(context);
     } catch (e) {
       showSnackbar(e.toString());
@@ -182,8 +190,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: Colors.grey,
                           ),
                           onPressed: () {

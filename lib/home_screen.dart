@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:quicks/screens/delivery_management_screen.dart';
 
 import 'login_screen.dart';
+import 'order_management.dart';
 
 class QsellerApp extends StatelessWidget {
 
@@ -41,23 +43,42 @@ class _QsellerHomeScreenState extends State<QsellerHomeScreen> {
   }
 
   Future<void> fetchUserProfile() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId != null) {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-      if (doc.exists) {
-        final data = doc.data();
-        setState(() {
-          _profileImage = data?['profileImage'];
-          _name = data?['name'];
-          _email = data?['email'];
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Listen to real-time updates
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .snapshots()
+            .listen((doc) {
+          if (doc.exists) {
+            setState(() {
+              _profileImage = doc.data()?['profileImage'];
+              _name = doc.data()?['name'];
+              _email = doc.data()?['email'];
+            });
+          }
         });
       }
+    } catch (e) {
+      print('Error fetching profile: $e');
     }
   }
 
   void _signOut() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacementNamed('/LoginScreen');
+    try {
+      await FirebaseAuth.instance.signOut();
+      // After signing out, navigate to the LoginScreen
+      Navigator.of(context).pushReplacementNamed('/LoginScreen');
+    } catch (e) {
+      // Handle any errors
+      print('Error signing out: $e');
+      // You could also show a Snackbar or a dialog here to inform the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to sign out. Please try again.')),
+      );
+    }
   }
 
   @override
@@ -174,7 +195,7 @@ class _QsellerHomeScreenState extends State<QsellerHomeScreen> {
                                       ),
                                       DropdownButtonFormField(
                                         value: category,
-                                        items: ['Male', 'Female', 'Child', 'Night Dress']
+                                        items: ['Fashion', 'Toys', 'Electronics', 'Books', 'Beauty']
                                             .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
                                             .toList(),
                                         onChanged: (value) {
@@ -282,6 +303,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final String cloudinaryUrl = "https://api.cloudinary.com/v1_1/drbp7g1t4/image/upload";
   final String uploadPreset = "Qselllerproduct";
 
+  String? get userId => FirebaseAuth.instance.currentUser?.uid;
+
   Future<void> _saveProduct() async {
     final sellerId = FirebaseAuth.instance.currentUser?.uid;
     if (sellerId != null && _imageUrl != null) {
@@ -290,8 +313,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
       });
 
       try {
+        // Save product to Firestore
         await FirebaseFirestore.instance.collection('products').add({
-          'sellerId': sellerId,
+          'sellerId': sellerId, // Link product to the seller
           'name': _nameController.text,
           'price': double.parse(_priceController.text),
           'description': _descriptionController.text,
@@ -349,6 +373,31 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
+  Future<void> _fetchSellerProducts() async {
+    final sellerId = FirebaseAuth.instance.currentUser?.uid;
+    if (sellerId != null) {
+      try {
+        // Fetch products for the current seller only
+        QuerySnapshot snapshot = await FirebaseFirestore.instance
+            .collection('products')
+            .where('sellerId', isEqualTo: sellerId)
+            .get();
+
+        List<DocumentSnapshot> products = snapshot.docs;
+        print('Fetched products: ${products.length}');
+        // You can now use the products list to display the products for the seller
+      } catch (e) {
+        print('Error fetching products for seller: $e');
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSellerProducts(); // Fetch seller products when screen is loaded
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -379,7 +428,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   ),
                   DropdownButtonFormField(
                     value: _selectedCategory,
-                    items: ['Male', 'Female', 'Child', 'Night Dress']
+                    items: ['Fashion', 'Toys', 'Electronics', 'Books', 'Beauty']
                         .map((category) => DropdownMenuItem(value: category, child: Text(category)))
                         .toList(),
                     onChanged: (value) => setState(() => _selectedCategory = value),
@@ -409,22 +458,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
         ],
       ),
-    );
-  }
-}
-
-class DeliveryManagementScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Delivery Management'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Center(child: Text('Delivery Management Screen')),
     );
   }
 }
